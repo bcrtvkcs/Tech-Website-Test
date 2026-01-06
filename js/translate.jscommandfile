@@ -1,0 +1,202 @@
+// DeepL ile otomatik çeviri scripti - translations.js için
+// Kullanım: node translate.js
+
+const fs = require('fs');
+
+// DeepL API anahtarınızı buraya girin
+const DEEPL_API_KEY = '130203a9-4adf-459e-9de4-ac69e1459c47:fx';
+const DEEPL_API_URL = 'https://api-free.deepl.com/v2/translate'; // Ücretsiz plan için
+// Ücretli plan kullanıyorsanız: 'https://api.deepl.com/v2/translate'
+
+const translationsPath = './translations.js';
+const outputPath = './translations_tr.js';
+const checkpointPath = './translation_checkpoint.json';
+
+// Checkpoint kaydet
+function saveCheckpoint(translated) {
+  fs.writeFileSync(checkpointPath, JSON.stringify(translated, null, 2), 'utf8');
+}
+
+// Checkpoint yükle
+function loadCheckpoint() {
+  if (fs.existsSync(checkpointPath)) {
+    return JSON.parse(fs.readFileSync(checkpointPath, 'utf8'));
+  }
+  return null;
+}
+
+async function translateText(text, targetLang = 'TR', retries = 3) {
+  // Boş string ise çevirme
+  if (!text || text.trim() === '') {
+    return '';
+  }
+  
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(DEEPL_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `DeepL-Auth-Key ${DEEPL_API_KEY}`
+        },
+        body: JSON.stringify({
+          text: [text],
+          target_lang: targetLang,
+          source_lang: 'EN'
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        
+        // Rate limit hatası ise daha uzun bekle
+        if (response.status === 429) {
+          console.log(`\n⚠️  Rate limit! ${attempt}/${retries} deneme - 10 saniye bekleniyor...`);
+          await new Promise(resolve => setTimeout(resolve, 10000));
+          continue;
+        }
+        
+        throw new Error(`API hatası ${response.status}: ${JSON.stringify(errorData)}`);
+      }
+
+      const data = await response.json();
+      return data.translations[0].text;
+      
+    } catch (error) {
+      console.log(`\n⚠️  Hata (deneme ${attempt}/${retries}): ${error.message}`);
+      
+      if (attempt < retries) {
+        const waitTime = attempt * 2000; // Her denemede daha uzun bekle
+        console.log(`   ${waitTime/1000} saniye bekleyip tekrar denenecek...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      } else {
+        console.error(`\n❌ Çeviri başarısız ("${text.substring(0, 50)}..."): ${error.message}`);
+        return text; // Son denemede de başarısız olursa orijinal metni döndür
+      }
+    }
+  }
+  
+  return text;
+}
+
+async function translateInBatches(entries, batchSize = 30) {
+  const keys = Object.keys(entries);
+  let completed = 0;
+  
+  // Checkpoint varsa yükle
+  let translated = loadCheckpoint();
+  if (translated) {
+    completed = Object.keys(translated).length;
+    console.log(`📦 Checkpoint bulundu! ${completed} çeviri yüklendi, kaldığı yerden devam ediliyor...\n`);
+  } else {
+    translated = {};
+  }
+  
+  for (let i = 0; i < keys.length; i += batchSize) {
+    const batch = keys.slice(i, i + batchSize);
+    
+    console.log(`\n📦 Batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(keys.length/batchSize)}: ${i + 1}-${Math.min(i + batchSize, keys.length)} / ${keys.length}`);
+    
+    for (const key of batch) {
+      // Zaten çevrilmişse atla
+      if (translated[key] !== undefined) {
+        continue;
+      }
+      
+      const value = entries[key];
+      
+      if (value === '') {
+        // Boş değer varsa KEY'i çevir
+        const translatedKey = await translateText(key);
+        translated[key] = translatedKey;
+      } else {
+        // Değer doluysa VALUE'yu çevir
+        const translatedValue = await translateText(value);
+        translated[key] = translatedValue;
+      }
+      
+      completed++;
+      
+      // İlerlemeyi göster
+      process.stdout.write(`\r  ✓ ${completed}/${keys.length} tamamlandı`);
+      
+      // Her 10 çeviride bir checkpoint kaydet
+      if (completed % 10 === 0) {
+        saveCheckpoint(translated);
+      }
+      
+      // API rate limit için bekleme (200ms - daha güvenli)
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+    
+    // Her batch sonrası checkpoint kaydet ve bekle
+    saveCheckpoint(translated);
+    
+    if (i + batchSize < keys.length) {
+      console.log('\n  💾 Checkpoint kaydedildi');
+      console.log('  ⏳ Sonraki batch için 3 saniye bekleniyor...');
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+  }
+  
+  console.log('\n');
+  return translated;
+}
+
+async function main() {
+  try {
+    console.log('📄 translations.js dosyası okunuyor...\n');
+    
+    // Dosyayı oku
+    const fileContent = fs.readFileSync(translationsPath, 'utf8');
+    
+    // tr_translations objesini çıkar
+    const match = fileContent.match(/const\s+tr_translations\s*=\s*({[\s\S]*});/);
+    
+    if (!match) {
+      throw new Error('tr_translations objesi bulunamadı');
+    }
+    
+    // Objeyi parse et
+    const translations = eval('(' + match[1] + ')');
+    
+    // İstatistikleri göster
+    const emptyCount = Object.values(translations).filter(v => v === '').length;
+    console.log(`📊 Toplam ${Object.keys(translations).length} anahtar bulundu`);
+    console.log(`🔤 ${emptyCount} adet KEY çevrilecek (boş olanlar)`);
+    console.log(`📝 ${Object.keys(translations).length - emptyCount} adet VALUE çevrilecek (dolu olanlar)\n`);
+    console.log('🚀 Çeviri başlıyor...\n');
+    console.log('💡 İpucu: Hata alırsanız scripti tekrar çalıştırın, kaldığı yerden devam eder.\n');
+    
+    // Çeviriyi yap
+    const turkishTranslations = await translateInBatches(translations);
+    
+    // Yeni dosya içeriğini oluştur
+    const outputContent = `const tr_translations = ${JSON.stringify(turkishTranslations, null, 4)};\n`;
+    
+    // Dosyayı kaydet
+    fs.writeFileSync(outputPath, outputContent, 'utf8');
+    
+    // Checkpoint dosyasını sil
+    if (fs.existsSync(checkpointPath)) {
+      fs.unlinkSync(checkpointPath);
+    }
+    
+    console.log('✅ Çeviri tamamlandı!');
+    console.log(`📁 Sonuç dosyası: ${outputPath}\n`);
+    
+    // İstatistikleri göster
+    const translatedCount = Object.values(turkishTranslations).filter(v => v !== '').length;
+    console.log(`📈 İstatistikler:`);
+    console.log(`   • Toplam anahtar: ${Object.keys(turkishTranslations).length}`);
+    console.log(`   • Çevrilen: ${translatedCount}`);
+    console.log(`   • Boş bırakılan: ${Object.keys(turkishTranslations).length - translatedCount}`);
+    
+  } catch (error) {
+    console.error('\n❌ Hata:', error.message);
+    console.log('\n💡 Checkpoint kaydedildi. Scripti tekrar çalıştırarak kaldığı yerden devam edebilirsiniz.');
+    process.exit(1);
+  }
+}
+
+main();
