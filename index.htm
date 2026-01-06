@@ -2255,11 +2255,13 @@
         '15:{"metadata":[["$","title","0",{"children":"Aeronix Technologies"}],["$","meta","1",{"name":"description","content":"Aeronix delivers real-time video intelligence, transforming live footage into actionable insights that drive safety, efficiency, and smarter decisions."}],["$","meta","2",{"property":"og:title","content":"Aeronix Technologies"}],["$","meta","3",{"property":"og:description","content":"Aeronix delivers real-time video intelligence, transforming live footage into actionable insights that drive safety, efficiency, and smarter decisions."}],["$","meta","4",{"property":"og:url","content":"https://www.aeronix.com.tr/"}],["$","meta","5",{"property":"og:site_name","content":"Aeronix"}],["$","meta","6",{"property":"og:image","content":"https://www.aeronix.com.tr/images/og-image.jpg"}],["$","meta","7",{"property":"og:image:width","content":"1200"}],["$","meta","8",{"property":"og:image:height","content":"630"}],["$","meta","9",{"property":"og:image:alt","content":"Aeronix real-time AI dashboard interface"}],["$","meta","10",{"property":"og:type","content":"website"}],["$","meta","11",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","12",{"name":"twitter:title","content":"Aeronix Technologies"}],["$","meta","13",{"name":"twitter:description","content":"Aeronix delivers real-time video intelligence, transforming live footage into actionable insights that drive safety, efficiency, and smarter decisions."}],["$","meta","14",{"name":"twitter:image","content":"https://www.aeronix.com.tr/images/og-image.jpg"}],["$","link","15",{"rel":"shortcut icon","href":"/images/fav2.png"}],["$","link","16",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"48x48"}],["$","link","17",{"rel":"icon","href":"/images/fav2.png"}],["$","link","18",{"rel":"apple-touch-icon","href":"/images/fav2.png"}]],"error":null,"digest":"$undefined"}\n1d:{"metadata":"$15:metadata","error":null,"digest":"$undefined"}\n',
       ]);
     </script>
+
   <script>
   (function() {
     function updateLogo() {
       var isDark = document.documentElement.classList.contains("dark");
-      var logos = document.querySelectorAll('img[alt="aeronix-logo"]');
+      // Select both header (aeronix-logo) and footer (Aeronix Logo) images
+      var logos = document.querySelectorAll('img[alt="aeronix-logo"], img[alt="Aeronix Logo"]');
       logos.forEach(function(logo) {
         var src = logo.getAttribute("src");
         if (!src) return;

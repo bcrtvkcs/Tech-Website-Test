@@ -1126,11 +1126,13 @@
         '12:{"metadata":[["$","title","0",{"children":"Public Transport | Aeronix Technologies"}],["$","meta","1",{"name":"description","content":"Aeronix supports transport operators with AI-driven people counting, platform monitoring, and safety alerts across stations, terminals, and depots."}],["$","meta","2",{"property":"og:title","content":"Public Transport | Aeronix Technologies"}],["$","meta","3",{"property":"og:description","content":"Aeronix supports transport operators with AI-driven people counting, platform monitoring, and safety alerts across stations, terminals, and depots."}],["$","meta","4",{"property":"og:url","content":"https://www.aeronix.com.tr/industry/public-transport/"}],["$","meta","5",{"property":"og:image","content":"https://www.aeronix.com.tr/images/og-image.jpg"}],["$","meta","6",{"property":"og:image:width","content":"1200"}],["$","meta","7",{"property":"og:image:height","content":"630"}],["$","meta","8",{"property":"og:image:alt","content":"Aeronix monitoring public transport environment"}],["$","meta","9",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","10",{"name":"twitter:title","content":"Public Transport | Aeronix Technologies"}],["$","meta","11",{"name":"twitter:description","content":"Deploy Aeronix across transit networks for smarter operations. Use AI to manage crowd flow, monitor safety, and gain real-time insights in public transport systems."}],["$","meta","12",{"name":"twitter:image","content":"https://www.aeronix.com.tr/images/og-image.jpg"}],["$","link","13",{"rel":"shortcut icon","href":"/images/fav2.png"}],["$","link","14",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"48x48"}],["$","link","15",{"rel":"icon","href":"/images/fav2.png"}],["$","link","16",{"rel":"apple-touch-icon","href":"/images/fav2.png"}]],"error":null,"digest":"$undefined"}\n1a:{"metadata":"$12:metadata","error":null,"digest":"$undefined"}\n',
       ]);
     </script>
+
   <script>
   (function() {
     function updateLogo() {
       var isDark = document.documentElement.classList.contains("dark");
-      var logos = document.querySelectorAll('img[alt="aeronix-logo"]');
+      // Select both header (aeronix-logo) and footer (Aeronix Logo) images
+      var logos = document.querySelectorAll('img[alt="aeronix-logo"], img[alt="Aeronix Logo"]');
       logos.forEach(function(logo) {
         var src = logo.getAttribute("src");
         if (!src) return;
