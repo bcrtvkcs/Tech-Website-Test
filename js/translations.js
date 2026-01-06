@@ -820,11 +820,11 @@ const tr_translations = {
     "wsu.png": "wsu.png",
     "xenon.png": "xenon.png",
     "your own BI stack": "kendi BI yığınınız",
-    "— enabling": "- etkinleştirme"
-    "Al-powered people counting and video analytics for smarter surveillance.": "Daha akıllı gözetim için yapay zeka destekli insan sayımı ve video analizi."
-    "Access control that integrates with facial recognition and attendance logs.": "Yüz tanıma ve devam kayıtları ile entegre erişim kontrolü."
-    "Smart cafeteria management for efficient and fair food service.": "Verimli ve adil yemek hizmeti için akıllı kafeterya yönetimi."
-    "Tailored AI and analytics solutions built to meet your unique business needs.": "Benzersiz iş ihtiyaçlarınızı karşılamak için özel olarak tasarlanmış yapay zeka ve analitik çözümleri."
-    "Expert consulting and implementation support to help you deploy with confidence.": "Güvenle dağıtım yapmanıza yardımcı olacak uzman danışmanlık ve uygulama desteği."
-    "Ongoing system monitoring, maintenance, and optimization.": "Kesintisiz sistem izleme, bakım ve optimizasyon."
+    "— enabling": "- etkinleştirme",
+    "Al-powered people counting and video analytics for smarter surveillance.": "Daha akıllı gözetim için yapay zeka destekli insan sayımı ve video analizi.",
+    "Access control that integrates with facial recognition and attendance logs.": "Yüz tanıma ve devam kayıtları ile entegre erişim kontrolü.",
+    "Smart cafeteria management for efficient and fair food service.": "Verimli ve adil yemek hizmeti için akıllı kafeterya yönetimi.",
+    "Tailored AI and analytics solutions built to meet your unique business needs.": "Benzersiz iş ihtiyaçlarınızı karşılamak için özel olarak tasarlanmış yapay zeka ve analitik çözümleri.",
+    "Expert consulting and implementation support to help you deploy with confidence.": "Güvenle dağıtım yapmanıza yardımcı olacak uzman danışmanlık ve uygulama desteği.",
+    "Ongoing system monitoring, maintenance, and optimization.": "Kesintisiz sistem izleme, bakım ve optimizasyon.",
 };
