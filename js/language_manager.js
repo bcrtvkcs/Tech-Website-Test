@@ -1,11 +1,9 @@
 // Language Manager for Aeronix Website
-// Handles translation injection and language toggling with React hydration support
+// Handles translation injection and language toggling with React hydration support via Aggressive Polling
 
 (function() {
     const LANG_STORAGE_KEY = 'aeronix_lang';
     const DEFAULT_LANG = 'en';
-    let observer;
-    let debounceTimer;
 
     // Helper to get current language
     function getLanguage() {
@@ -42,24 +40,27 @@
 
     // Function to apply translations
     function applyLanguage(lang) {
-        if (lang === 'en') {
-            return;
-        }
+        if (lang === 'en') return;
 
         if (lang === 'tr') {
-            document.body.classList.add('lang-tr-active');
+            if (!document.body.classList.contains('lang-tr-active')) {
+                document.body.classList.add('lang-tr-active');
+            }
 
             // Walk the DOM and replace text
             const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
             let node;
             while (node = walk.nextNode()) {
                 // Skip if parent is script or style
-                if (node.parentNode.tagName === 'SCRIPT' || node.parentNode.tagName === 'STYLE') continue;
+                const parentTag = node.parentNode.tagName;
+                if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'NOSCRIPT') continue;
 
                 const text = node.nodeValue.trim();
                 // Ensure tr_translations is available
                 if (text && typeof tr_translations !== 'undefined' && tr_translations[text]) {
-                    // Check if we have a translation and it's not empty
+                    // Only replace if it's not already translated (to be safe, though key lookup implicitly handles this if keys are unique)
+                    // But here we rely on the fact that 'Solutions' maps to 'Çözümler', so if text is 'Solutions', we replace.
+                    // If text is 'Çözümler', tr_translations['Çözümler'] is undefined, so we skip.
                     if (tr_translations[text].length > 0) {
                         node.nodeValue = node.nodeValue.replace(text, tr_translations[text]);
                     }
@@ -128,6 +129,7 @@
          // Find target container
          let targetContainer = null;
 
+         // Strategy 1: Look for the theme toggle button's screen reader text
          const spans = document.querySelectorAll('span.sr-only');
          for (let i = 0; i < spans.length; i++) {
              if (spans[i].textContent.includes('Toggle theme')) {
@@ -139,8 +141,10 @@
              }
          }
 
+         // Strategy 2: Fallback to the specific Tailwind class structure for desktop
          if (!targetContainer) {
              try {
+                // The container for the theme button in header
                 targetContainer = document.querySelector('.hidden.flex-shrink-0.lg\\:flex');
              } catch(e) { console.error(e); }
          }
@@ -174,52 +178,57 @@
          return false;
     }
 
-    function handleMutations(mutations) {
-        // Debounce the logic to avoid performance issues during hydration
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            // 1. Re-insert button if missing
-            insertButton();
-
-            // 2. Re-apply language if needed
-            const currentLang = getLanguage();
-            if (currentLang === 'tr') {
-                applyLanguage('tr');
-            }
-            // Ensure button state is correct
-            updateToggleButton(currentLang);
-        }, 100); // 100ms debounce
-    }
-
-    function init() {
-        console.log("Language Manager Init");
+    function checkAndEnforceState() {
         const currentLang = getLanguage();
+        if (currentLang === 'en') return;
 
-        if (currentLang === 'tr') {
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => applyLanguage('tr'));
-            } else {
-                applyLanguage('tr');
+        // 1. Enforce Button Presence
+        insertButton();
+
+        // 2. Enforce Translation (Sentinel Check)
+        // Check if "Solutions" is present in the DOM. If so, it means we reverted to English.
+        // We use a specific, high-visibility element to avoid scanning the whole DOM every time.
+        // However, looking for text content in body is reasonably fast if we exit early.
+        // Or better: check if specific known elements are English.
+        
+        let needsTranslation = false;
+        
+        // Check 1: Menu item "Solutions"
+        // XPath might be cleaner, but let's iterate links or headings
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        let checks = 0;
+        while(node = walker.nextNode()) {
+            checks++;
+            if (checks > 100) break; // Optimization: only check first 100 text nodes (header is usually top)
+            if (node.nodeValue.includes("Solutions") || node.nodeValue.includes("Industries")) {
+                needsTranslation = true;
+                break;
             }
         }
 
+        if (needsTranslation) {
+            applyLanguage('tr');
+        }
+        
+        updateToggleButton(currentLang);
+    }
+
+    function init() {
+        console.log("Language Manager Init (Polling Mode)");
+        
+        // Initial run
+        const currentLang = getLanguage();
+        if (currentLang === 'tr') {
+             applyLanguage('tr');
+        }
         insertButton();
 
-        // Persistent Observer to handle React hydration overwrites
-        observer = new MutationObserver(handleMutations);
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-            characterData: true // Watch for text changes
-        });
-
-        // Fallback interval checks for the first few seconds
-        let checks = 0;
-        const interval = setInterval(() => {
-             handleMutations();
-             checks++;
-             if (checks > 50) clearInterval(interval); // Check for approx 10 seconds
-        }, 200);
+        // Aggressive Polling Loop
+        // Runs every 250ms indefinitely to catch React hydration and subsequent re-renders
+        setInterval(() => {
+            checkAndEnforceState();
+        }, 250);
     }
 
     // Start initialization
