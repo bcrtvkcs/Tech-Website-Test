@@ -954,7 +954,8 @@
   (function() {
     function updateLogo() {
       var isDark = document.documentElement.classList.contains("dark");
-      var logos = document.querySelectorAll('img[alt="aeronix-logo"]');
+      // Select both header (aeronix-logo) and footer (Aeronix Logo) images
+      var logos = document.querySelectorAll('img[alt="aeronix-logo"], img[alt="Aeronix Logo"]');
       logos.forEach(function(logo) {
         var src = logo.getAttribute("src");
         if (!src) return;
@@ -971,10 +972,10 @@
         }
       });
     }
-
+    
     // Initial update
     updateLogo();
-
+    
     // Watch for class changes on html element
     var observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
@@ -983,7 +984,7 @@
         }
       });
     });
-
+    
     observer.observe(document.documentElement, {
       attributes: true
     });
