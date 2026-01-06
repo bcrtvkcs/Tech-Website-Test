@@ -1123,5 +1123,44 @@
         '12:{"metadata":[["$","title","0",{"children":"Parking | Aeronix Technologies"}],["$","meta","1",{"name":"description","content":"Aeronix enhances parking operations with AI-powered license plate recognition, vehicle counting, access control, and real-time occupancy monitoring."}],["$","meta","2",{"property":"og:title","content":"Parking | Aeronix Technologies"}],["$","meta","3",{"property":"og:description","content":"Aeronix enhances parking operations with AI-powered license plate recognition, vehicle counting, access control, and real-time occupancy monitoring."}],["$","meta","4",{"property":"og:url","content":"https://www.aeronix.com.tr/industry/parking/"}],["$","meta","5",{"property":"og:image","content":"https://www.aeronix.com.tr/images/og-image.jpg"}],["$","meta","6",{"property":"og:image:width","content":"1200"}],["$","meta","7",{"property":"og:image:height","content":"630"}],["$","meta","8",{"property":"og:image:alt","content":"Aeronix AI used in parking facility"}],["$","meta","9",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","10",{"name":"twitter:title","content":"Parking | Aeronix Technologies"}],["$","meta","11",{"name":"twitter:description","content":"Streamline vehicle flow and access in car parks with Aeronix. AI tools for license plate logging, space availability, and secure entry."}],["$","meta","12",{"name":"twitter:image","content":"https://www.aeronix.com.tr/images/og-image.jpg"}],["$","link","13",{"rel":"shortcut icon","href":"/images/fav2.png"}],["$","link","14",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"48x48"}],["$","link","15",{"rel":"icon","href":"/images/fav2.png"}],["$","link","16",{"rel":"apple-touch-icon","href":"/images/fav2.png"}]],"error":null,"digest":"$undefined"}\n1a:{"metadata":"$12:metadata","error":null,"digest":"$undefined"}\n',
       ]);
     </script>
+  <script>
+  (function() {
+    function updateLogo() {
+      var isDark = document.documentElement.classList.contains("dark");
+      var logos = document.querySelectorAll('img[alt="aeronix-logo"]');
+      logos.forEach(function(logo) {
+        var src = logo.getAttribute("src");
+        if (!src) return;
+        var newFilename = isDark ? "aeronix-logo-light.png" : "aeronix-logo-dark.png";
+        // Replace any of the known logo filenames with the new one, preserving path
+        var newSrc = src.replace(/aeronix-logo(-light|-dark)?\.png/, newFilename);
+        if (src !== newSrc) {
+          logo.setAttribute("src", newSrc);
+          if (logo.hasAttribute("srcset")) {
+            var srcset = logo.getAttribute("srcset");
+            var newSrcset = srcset.replace(/aeronix-logo(-light|-dark)?\.png/g, newFilename);
+            logo.setAttribute("srcset", newSrcset);
+          }
+        }
+      });
+    }
+
+    // Initial update
+    updateLogo();
+
+    // Watch for class changes on html element
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === "attributes" && mutation.attributeName === "class") {
+          updateLogo();
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true
+    });
+  })();
+</script>
   </body>
 </html>
