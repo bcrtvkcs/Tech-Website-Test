@@ -180,10 +180,14 @@
 
     function checkAndEnforceState() {
         const currentLang = getLanguage();
-        if (currentLang === 'en') return;
 
-        // 1. Enforce Button Presence
+        // 1. Enforce Button Presence (Always, even for English)
         insertButton();
+
+        // Update button state (in case of hydration overwrites or just to be safe)
+        updateToggleButton(currentLang);
+
+        if (currentLang === 'en') return;
 
         // 2. Enforce Translation (Sentinel Check)
         // Check if "Solutions" is present in the DOM. If so, it means we reverted to English.
