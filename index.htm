@@ -115,7 +115,18 @@
       src="_next/static/chunks/polyfills-42372ed130431b0a.js"
       nomodule=""
     ></script>
-  </head>
+  <style>
+  body { transition: filter 0.5s ease, opacity 0.5s ease; }
+</style>
+<style id="aeronix-blur-style">
+  html body { filter: blur(5px); opacity: 0.8; pointer-events: none; }
+</style>
+<noscript>
+  <style>
+    html body { filter: none !important; opacity: 1 !important; pointer-events: auto !important; }
+  </style>
+</noscript>
+</head>
   <body
     class="bg-background text-foreground font-[var(--font-sans)] antialiased"
   >

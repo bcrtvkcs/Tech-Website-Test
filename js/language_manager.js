@@ -123,6 +123,14 @@
          return path; // Fallback
     }
 
+    function revealContent() {
+        // Remove the blur style block to trigger the transition
+        const blurStyle = document.getElementById('aeronix-blur-style');
+        if (blurStyle) {
+             blurStyle.remove();
+        }
+    }
+
     function insertButton() {
          if (document.getElementById('lang-toggle-btn')) return true;
 
@@ -226,6 +234,10 @@
         if (currentLang === 'tr') {
              applyLanguage('tr');
         }
+
+        // Trigger the unblur animation
+        revealContent();
+
         insertButton();
 
         // Aggressive Polling Loop
