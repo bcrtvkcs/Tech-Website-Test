@@ -1,0 +1,48 @@
+/* Text Blur Animation */
+.aeronix-text-anim-active h1,
+.aeronix-text-anim-active h2,
+.aeronix-text-anim-active h3,
+.aeronix-text-anim-active h4,
+.aeronix-text-anim-active h5,
+.aeronix-text-anim-active h6,
+.aeronix-text-anim-active p,
+.aeronix-text-anim-active span,
+.aeronix-text-anim-active a,
+.aeronix-text-anim-active li,
+.aeronix-text-anim-active blockquote,
+.aeronix-text-anim-active td,
+.aeronix-text-anim-active th,
+.aeronix-text-anim-active label,
+.aeronix-text-anim-active strong,
+.aeronix-text-anim-active em,
+.aeronix-text-anim-active b,
+.aeronix-text-anim-active i,
+.aeronix-text-anim-active button {
+    -webkit-animation: text-focus-in 0.3s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+            animation: text-focus-in 0.3s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+}
+
+@-webkit-keyframes text-focus-in {
+  0% {
+    -webkit-filter: blur(12px);
+            filter: blur(12px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-filter: blur(0px);
+            filter: blur(0px);
+    opacity: 1;
+  }
+}
+@keyframes text-focus-in {
+  0% {
+    -webkit-filter: blur(12px);
+            filter: blur(12px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-filter: blur(0px);
+            filter: blur(0px);
+    opacity: 1;
+  }
+}

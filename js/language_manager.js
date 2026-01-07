@@ -35,6 +35,30 @@
         } else {
              applyLanguage(lang);
              updateToggleButton(lang);
+             replayTextAnimation();
+        }
+    }
+
+    // Function to replay text animation
+    function replayTextAnimation() {
+        const activeClass = 'aeronix-text-anim-active';
+
+        // Temporarily disconnect observer to prevent fighting
+        if (window.animObserver) {
+            window.animObserver.disconnect();
+        }
+
+        if (document.body.classList.contains(activeClass)) {
+            document.body.classList.remove(activeClass);
+            void document.body.offsetWidth; // Trigger reflow
+            document.body.classList.add(activeClass);
+        } else {
+             document.body.classList.add(activeClass);
+        }
+
+        // Reconnect observer
+        if (window.animObserver) {
+             window.animObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         }
     }
 
@@ -221,6 +245,19 @@
     function init() {
         console.log("Language Manager Init (Polling Mode)");
         
+        // Ensure animation class is present
+        if (!document.body.classList.contains('aeronix-text-anim-active')) {
+            document.body.classList.add('aeronix-text-anim-active');
+        }
+
+        // MutationObserver to enforce animation class against hydration
+        window.animObserver = new MutationObserver((mutations) => {
+            if (!document.body.classList.contains('aeronix-text-anim-active')) {
+                document.body.classList.add('aeronix-text-anim-active');
+            }
+        });
+        window.animObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
         // Initial run
         const currentLang = getLanguage();
         if (currentLang === 'tr') {
@@ -232,6 +269,11 @@
         // Runs every 250ms indefinitely to catch React hydration and subsequent re-renders
         setInterval(() => {
             checkAndEnforceState();
+
+            // Also enforce anim class in polling just in case
+            if (!document.body.classList.contains('aeronix-text-anim-active')) {
+                document.body.classList.add('aeronix-text-anim-active');
+            }
         }, 250);
     }
 
