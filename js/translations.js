@@ -556,7 +556,7 @@ const tr_translations = {
     "Transit hubs are dynamic environments with constant movement and high foot traffic. Aeronix enables real-time monitoring of passenger flow, platform congestion, and unauthorized access. Our AI tools help prevent safety incidents, streamline operations, and deliver insights to support scheduling, staffing, and infrastructure planning.": "Transit merkezleri sürekli hareketin ve yoğun yaya trafiğinin olduğu dinamik ortamlardır. Aeronix, yolcu akışının, platform tıkanıklığının ve yetkisiz erişimin gerçek zamanlı olarak izlenmesini sağlar. Yapay zeka araçlarımız güvenlik olaylarını önlemeye, operasyonları kolaylaştırmaya ve zamanlama, personel ve altyapı planlamasını desteklemek için içgörüler sunmaya yardımcı olur.",
     "Trigger Alerts with Behavior Rules": "Davranış Kuralları ile Uyarıları Tetikleme",
     "Trigger alerts for entry into restricted or hazardous urban zones.": "Kısıtlı veya tehlikeli kentsel bölgelere giriş için uyarıları tetikleyin.",
-    "Trusted by": "İş Birliği",
+    "Trusted by": "İş Ortaklarımız",
     "Unattended Object Detection": "Gözetimsiz Nesne Algılama",
     "Unauthorized Access": "Yetkisiz Erişim",
     "Understand how individuals move across zones over time. With Face Trail, track their journey from entry to exit, dwell times, and zone transitions, ideal for operational analysis and behavioral insights.": "Bireylerin zaman içinde bölgeler arasında nasıl hareket ettiğini anlayın. Face Trail ile girişten çıkışa kadar olan yolculuklarını, bekleme sürelerini ve bölge geçişlerini takip edin, operasyonel analiz ve davranışsal içgörüler için idealdir.",
