@@ -246,9 +246,13 @@
                  if (logoImg) {
                       const logoDiv = logoImg.closest('div'); // Usually the wrapper
                       if (logoDiv && logoDiv.parentElement === nav) {
-                           if (!logoDiv.classList.contains('mr-auto')) logoDiv.classList.add('mr-auto');
+                           // Remove mr-auto from logo if present (we use ml-auto on theme container instead)
+                           // if (!logoDiv.classList.contains('mr-auto')) logoDiv.classList.add('mr-auto');
                       }
                  }
+
+                 // Add ml-auto to theme container to push it and subsequent siblings to the right
+                 if (!themeContainer.classList.contains('ml-auto')) themeContainer.classList.add('ml-auto');
              }
          }
     }
