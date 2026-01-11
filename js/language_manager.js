@@ -176,8 +176,9 @@
          if (targetContainer) {
              const btn = document.createElement('button');
              btn.id = 'lang-toggle-btn';
-             btn.className = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9 mr-2";
-             btn.style.marginRight = "0.5rem";
+             btn.className = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9";
+             // Margin removed, using gap-2 on parent container instead
+             // btn.style.marginRight = "0.5rem";
 
              const img = document.createElement('img');
              img.id = 'lang-toggle-img';
@@ -202,8 +203,65 @@
          return false;
     }
 
+    function enforceLayout() {
+         // 1. Find the Theme Toggle Button Container
+         // Look for the button containing "Toggle theme" sr-only span
+         const spans = document.querySelectorAll('span.sr-only');
+         let themeContainer = null;
+         for (let i = 0; i < spans.length; i++) {
+             if (spans[i].textContent.includes('Toggle theme')) {
+                 const btn = spans[i].closest('button');
+                 if (btn) {
+                     themeContainer = btn.parentElement;
+                     break;
+                 }
+             }
+         }
+
+         if (themeContainer) {
+             // Remove 'hidden' and 'lg:flex' which React might restore
+             if (themeContainer.classList.contains('hidden')) themeContainer.classList.remove('hidden');
+             if (themeContainer.classList.contains('lg:flex')) themeContainer.classList.remove('lg:flex');
+
+             // Ensure 'flex', 'items-center', 'gap-2'
+             if (!themeContainer.classList.contains('flex')) themeContainer.classList.add('flex');
+             if (!themeContainer.classList.contains('items-center')) themeContainer.classList.add('items-center');
+             if (!themeContainer.classList.contains('gap-2')) themeContainer.classList.add('gap-2');
+
+             // Also ensure flex-shrink-0 (usually stays, but good to be safe)
+             if (!themeContainer.classList.contains('flex-shrink-0')) themeContainer.classList.add('flex-shrink-0');
+         }
+
+         // 2. Find Nav and Logo to fix justification
+         if (themeContainer) {
+             const nav = themeContainer.parentElement;
+             if (nav && nav.tagName === 'NAV') {
+                 // Fix Nav
+                 if (nav.classList.contains('justify-between')) nav.classList.remove('justify-between');
+                 if (!nav.classList.contains('gap-2')) nav.classList.add('gap-2');
+
+                 // Fix Logo Container (should be the first child of nav)
+                 // Or find the div containing the logo img
+                 const logoImg = nav.querySelector('img[alt*="logo"]');
+                 if (logoImg) {
+                      const logoDiv = logoImg.closest('div'); // Usually the wrapper
+                      if (logoDiv && logoDiv.parentElement === nav) {
+                           // Remove mr-auto from logo if present (we use ml-auto on theme container instead)
+                           // if (!logoDiv.classList.contains('mr-auto')) logoDiv.classList.add('mr-auto');
+                      }
+                 }
+
+                 // Add ml-auto to theme container to push it and subsequent siblings to the right
+                 if (!themeContainer.classList.contains('ml-auto')) themeContainer.classList.add('ml-auto');
+             }
+         }
+    }
+
     function checkAndEnforceState() {
         const currentLang = getLanguage();
+
+        // 0. Enforce Layout (Fight React Hydration)
+        enforceLayout();
 
         // 1. Enforce Button Presence (Always, even for English)
         insertButton();
