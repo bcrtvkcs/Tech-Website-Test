@@ -9,7 +9,6 @@
     const DESIRED_HTML = `
           <section class="px-6 py-8 md:px-8">
             <div class="mx-auto max-w-4xl space-y-4">
-              <h2 class="text-3xl font-bold tracking-tight">The Company</h2>
               <p class="leading-relaxed">
                 <strong>Aeronix</strong> is a technology company focused on
                 enhancing safety, security, and operational efficiency through
