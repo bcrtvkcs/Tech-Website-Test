@@ -1,5 +1,5 @@
 // Language Manager for Aeronix Website
-// Handles translation injection and language toggling with React hydration support via Aggressive Polling
+// Handles translation injection and language toggling (Vanilla JS version)
 
 (function() {
     const LANG_STORAGE_KEY = 'aeronix_lang';
@@ -30,7 +30,6 @@
         } catch(e) { console.error(e); }
 
         if (lang === 'en') {
-             // Reload to clear Turkish changes cleanly
              location.reload();
         } else {
              applyLanguage(lang);
@@ -42,23 +41,12 @@
     // Function to replay text animation
     function replayTextAnimation() {
         const activeClass = 'aeronix-text-anim-active';
-
-        // Temporarily disconnect observer to prevent fighting
-        if (window.animObserver) {
-            window.animObserver.disconnect();
-        }
-
         if (document.body.classList.contains(activeClass)) {
             document.body.classList.remove(activeClass);
             void document.body.offsetWidth; // Trigger reflow
             document.body.classList.add(activeClass);
         } else {
              document.body.classList.add(activeClass);
-        }
-
-        // Reconnect observer
-        if (window.animObserver) {
-             window.animObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         }
     }
 
@@ -75,16 +63,11 @@
             const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
             let node;
             while (node = walk.nextNode()) {
-                // Skip if parent is script or style
                 const parentTag = node.parentNode.tagName;
                 if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'NOSCRIPT') continue;
 
                 const text = node.nodeValue.trim();
-                // Ensure tr_translations is available
                 if (text && typeof tr_translations !== 'undefined' && tr_translations[text]) {
-                    // Only replace if it's not already translated (to be safe, though key lookup implicitly handles this if keys are unique)
-                    // But here we rely on the fact that 'Solutions' maps to 'Çözümler', so if text is 'Solutions', we replace.
-                    // If text is 'Çözümler', tr_translations['Çözümler'] is undefined, so we skip.
                     if (tr_translations[text].length > 0) {
                         node.nodeValue = node.nodeValue.replace(text, tr_translations[text]);
                     }
@@ -95,22 +78,18 @@
             const elements = document.getElementsByTagName('*');
             for (let i = 0; i < elements.length; i++) {
                 const el = elements[i];
-                // Alt text
                 if (el.hasAttribute('alt')) {
                     const txt = el.getAttribute('alt').trim();
                     if (txt && typeof tr_translations !== 'undefined' && tr_translations[txt]) el.setAttribute('alt', tr_translations[txt]);
                 }
-                // Placeholder
                 if (el.hasAttribute('placeholder')) {
                     const txt = el.getAttribute('placeholder').trim();
                     if (txt && typeof tr_translations !== 'undefined' && tr_translations[txt]) el.setAttribute('placeholder', tr_translations[txt]);
                 }
-                // Title
                 if (el.hasAttribute('title')) {
                     const txt = el.getAttribute('title').trim();
                     if (txt && typeof tr_translations !== 'undefined' && tr_translations[txt]) el.setAttribute('title', tr_translations[txt]);
                 }
-                // Meta content (description)
                 if (el.tagName.toLowerCase() === 'meta' && el.getAttribute('name') === 'description') {
                      const txt = el.getAttribute('content').trim();
                      if (txt && typeof tr_translations !== 'undefined' && tr_translations[txt]) el.setAttribute('content', tr_translations[txt]);
@@ -134,26 +113,34 @@
     }
 
     function getRelativeImagePath(path) {
+         // Simple check if we are in a subdirectory
+         // This assumes scripts are loaded properly or we can find an image
          const existingImg = document.querySelector('img[src*="images/"]');
          if (existingImg) {
              const src = existingImg.getAttribute('src');
-             // Find where 'images/' starts
              const idx = src.indexOf('images/');
              if (idx !== -1) {
                  const prefix = src.substring(0, idx);
                  return prefix + path;
              }
          }
-         return path; // Fallback
+         // Fallback based on depth
+         const depth = window.location.pathname.split('/').length - 2;
+         // Handle root
+         if (window.location.pathname.endsWith('index.htm') || window.location.pathname.endsWith('/')) {
+             // standard structure
+         }
+         // Just try standard relative path if image detection fails
+         let prefix = '';
+         if (window.location.pathname.indexOf('/contact/') !== -1 || window.location.pathname.indexOf('/about/') !== -1) prefix = '../';
+         return prefix + path;
     }
 
     function insertButton() {
          if (document.getElementById('lang-toggle-btn')) return true;
 
-         // Find target container
+         // Target container: The theme toggle button's parent
          let targetContainer = null;
-
-         // Strategy 1: Look for the theme toggle button's screen reader text
          const spans = document.querySelectorAll('span.sr-only');
          for (let i = 0; i < spans.length; i++) {
              if (spans[i].textContent.includes('Toggle theme')) {
@@ -165,20 +152,12 @@
              }
          }
 
-         // Strategy 2: Fallback to the specific Tailwind class structure for desktop
-         if (!targetContainer) {
-             try {
-                // The container for the theme button in header
-                targetContainer = document.querySelector('.hidden.flex-shrink-0.lg\\:flex');
-             } catch(e) { console.error(e); }
-         }
-
          if (targetContainer) {
              const btn = document.createElement('button');
              btn.id = 'lang-toggle-btn';
              btn.className = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9";
-             // Margin removed, using gap-2 on parent container instead
-             // btn.style.marginRight = "0.5rem";
+             // Force some margin if needed, but flex gap usually handles it
+             btn.style.marginRight = "8px";
 
              const img = document.createElement('img');
              img.id = 'lang-toggle-img';
@@ -203,139 +182,18 @@
          return false;
     }
 
-    function enforceLayout() {
-         // 1. Find the Theme Toggle Button Container
-         // Look for the button containing "Toggle theme" sr-only span
-         const spans = document.querySelectorAll('span.sr-only');
-         let themeContainer = null;
-         for (let i = 0; i < spans.length; i++) {
-             if (spans[i].textContent.includes('Toggle theme')) {
-                 const btn = spans[i].closest('button');
-                 if (btn) {
-                     themeContainer = btn.parentElement;
-                     break;
-                 }
-             }
-         }
-
-         if (themeContainer) {
-             // Remove 'hidden' and 'lg:flex' which React might restore
-             if (themeContainer.classList.contains('hidden')) themeContainer.classList.remove('hidden');
-             if (themeContainer.classList.contains('lg:flex')) themeContainer.classList.remove('lg:flex');
-
-             // Ensure 'flex', 'items-center', 'gap-2'
-             if (!themeContainer.classList.contains('flex')) themeContainer.classList.add('flex');
-             if (!themeContainer.classList.contains('items-center')) themeContainer.classList.add('items-center');
-             if (!themeContainer.classList.contains('gap-2')) themeContainer.classList.add('gap-2');
-
-             // Also ensure flex-shrink-0 (usually stays, but good to be safe)
-             if (!themeContainer.classList.contains('flex-shrink-0')) themeContainer.classList.add('flex-shrink-0');
-         }
-
-         // 2. Find Nav and Logo to fix justification
-         if (themeContainer) {
-             const nav = themeContainer.parentElement;
-             if (nav && nav.tagName === 'NAV') {
-                 // Fix Nav
-                 if (nav.classList.contains('justify-between')) nav.classList.remove('justify-between');
-                 if (!nav.classList.contains('gap-2')) nav.classList.add('gap-2');
-
-                 // Fix Logo Container (should be the first child of nav)
-                 // Or find the div containing the logo img
-                 const logoImg = nav.querySelector('img[alt*="logo"]');
-                 if (logoImg) {
-                      const logoDiv = logoImg.closest('div'); // Usually the wrapper
-                      if (logoDiv && logoDiv.parentElement === nav) {
-                           // Remove mr-auto from logo if present (we use ml-auto on theme container instead)
-                           // if (!logoDiv.classList.contains('mr-auto')) logoDiv.classList.add('mr-auto');
-                      }
-                 }
-
-                 // Add ml-auto to theme container to push it and subsequent siblings to the right
-                 if (!themeContainer.classList.contains('ml-auto')) themeContainer.classList.add('ml-auto');
-             }
-         }
-    }
-
-    function checkAndEnforceState() {
-        const currentLang = getLanguage();
-
-        // 0. Enforce Layout (Fight React Hydration)
-        enforceLayout();
-
-        // 1. Enforce Button Presence (Always, even for English)
-        insertButton();
-
-        // Update button state (in case of hydration overwrites or just to be safe)
-        updateToggleButton(currentLang);
-
-        if (currentLang === 'en') return;
-
-        // 2. Enforce Translation (Sentinel Check)
-        // Check if "Solutions" is present in the DOM. If so, it means we reverted to English.
-        // We use a specific, high-visibility element to avoid scanning the whole DOM every time.
-        // However, looking for text content in body is reasonably fast if we exit early.
-        // Or better: check if specific known elements are English.
-        
-        let needsTranslation = false;
-        
-        // Check 1: Menu item "Solutions"
-        // XPath might be cleaner, but let's iterate links or headings
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-        let node;
-        let checks = 0;
-        while(node = walker.nextNode()) {
-            checks++;
-            if (checks > 100) break; // Optimization: only check first 100 text nodes (header is usually top)
-            if (node.nodeValue.includes("Solutions") || node.nodeValue.includes("Industries")) {
-                needsTranslation = true;
-                break;
-            }
-        }
-
-        if (needsTranslation) {
-            applyLanguage('tr');
-        }
-        
-        updateToggleButton(currentLang);
-    }
-
     function init() {
-        console.log("Language Manager Init (Polling Mode)");
-        
-        // Ensure animation class is present
         if (!document.body.classList.contains('aeronix-text-anim-active')) {
             document.body.classList.add('aeronix-text-anim-active');
         }
 
-        // MutationObserver to enforce animation class against hydration
-        window.animObserver = new MutationObserver((mutations) => {
-            if (!document.body.classList.contains('aeronix-text-anim-active')) {
-                document.body.classList.add('aeronix-text-anim-active');
-            }
-        });
-        window.animObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-        // Initial run
         const currentLang = getLanguage();
         if (currentLang === 'tr') {
              applyLanguage('tr');
         }
         insertButton();
-
-        // Aggressive Polling Loop
-        // Runs every 250ms indefinitely to catch React hydration and subsequent re-renders
-        setInterval(() => {
-            checkAndEnforceState();
-
-            // Also enforce anim class in polling just in case
-            if (!document.body.classList.contains('aeronix-text-anim-active')) {
-                document.body.classList.add('aeronix-text-anim-active');
-            }
-        }, 250);
     }
 
-    // Start initialization
     if (document.readyState !== 'loading') {
         init();
     } else {
