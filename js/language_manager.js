@@ -139,25 +139,23 @@
     function insertButton() {
          if (document.getElementById('lang-toggle-btn')) return true;
 
-         // Target container: The theme toggle button's parent
+         // Find the theme toggle button to insert before it
          let targetContainer = null;
-         const spans = document.querySelectorAll('span.sr-only');
-         for (let i = 0; i < spans.length; i++) {
-             if (spans[i].textContent.includes('Toggle theme')) {
-                 const btn = spans[i].closest('button');
-                 if (btn) {
-                     targetContainer = btn.parentElement;
-                     break;
-                 }
+         let themeBtn = null;
+
+         const buttons = document.querySelectorAll('button');
+         for (const btn of buttons) {
+             if (btn.querySelector('.lucide-sun') || btn.querySelector('.lucide-moon') || (btn.textContent && btn.textContent.includes('Toggle theme'))) {
+                 themeBtn = btn;
+                 targetContainer = btn.parentElement;
+                 break;
              }
          }
 
-         if (targetContainer) {
+         if (targetContainer && themeBtn) {
              const btn = document.createElement('button');
              btn.id = 'lang-toggle-btn';
-             btn.className = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9";
-             // Force some margin if needed, but flex gap usually handles it
-             btn.style.marginRight = "8px";
+             btn.className = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9 cursor-pointer";
 
              const img = document.createElement('img');
              img.id = 'lang-toggle-img';
@@ -168,7 +166,8 @@
 
              btn.appendChild(img);
 
-             targetContainer.insertBefore(btn, targetContainer.firstChild);
+             // Insert the language button BEFORE the theme toggle button within the flex container
+             targetContainer.insertBefore(btn, themeBtn);
 
              btn.addEventListener('click', () => {
                  const current = getLanguage();
