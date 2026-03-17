@@ -23,105 +23,90 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // --- Desktop Dropdowns ---
-    const navItems = document.querySelectorAll('nav [data-slot="navigation-menu-item"] button');
+    const navItems = document.querySelectorAll('nav li > button');
 
     // Create dropdown containers
     navItems.forEach(btn => {
-        const key = btn.textContent.trim();
+        let rawText = btn.textContent;
+        let key = rawText.replace(/\s+/g, ' ').trim().split(' ')[0];
+        if (rawText.includes('Solutions')) key = 'Solutions';
+        if (rawText.includes('Industries')) key = 'Industries';
+        if (rawText.includes('Services')) key = 'Services';
+
         if (menuData[key]) {
+            const liParent = btn.parentElement;
+            liParent.style.position = 'relative';
+
             const dropdown = document.createElement('div');
-            dropdown.className = 'absolute top-full left-0 mt-2 w-56 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95 hidden';
+            // Adding a small padding top so hover doesn't break when moving mouse down from button
+            dropdown.className = 'absolute top-full left-0 mt-2 w-56 rounded-md border bg-popover text-popover-foreground shadow-md outline-none hidden z-50';
+            // dropdown.style.display = 'none';
             dropdown.style.backgroundColor = 'var(--background)';
             dropdown.style.border = '1px solid var(--border)';
-            dropdown.style.zIndex = '1000';
+
+
+            // Invisible bridge to connect button and dropdown for smooth hover
+            const bridge = document.createElement('div');
+            bridge.style.position = 'absolute';
+            bridge.style.top = '-8px';
+            bridge.style.left = '0';
+            bridge.style.right = '0';
+            bridge.style.height = '8px';
+            bridge.style.backgroundColor = 'transparent';
+            dropdown.appendChild(bridge);
 
             const ul = document.createElement('ul');
-            ul.className = 'p-2';
+            ul.className = 'p-2 relative';
+
+            const upCount = (window.location.pathname.match(/\//g) || []).length - 1;
+            let finalHrefPrefix = upCount > 0 ? '../'.repeat(upCount) : '';
+
+            // if we are in local file system
+            if (window.location.protocol === 'file:') {
+                 const cssLink = document.querySelector('link[href*="css/main.css"]');
+                 if (cssLink) {
+                     const matches = cssLink.getAttribute('href').match(/\.\.\//g);
+                     finalHrefPrefix = matches ? '../'.repeat(matches.length) : '';
+                 }
+            }
 
             menuData[key].forEach(item => {
                 const li = document.createElement('li');
                 const a = document.createElement('a');
-
-                // Adjust href based on current depth
-                // Simple heuristic: if we are in a subdir, prepend ../
-                // However, the cleanest way is to assume hrefs are relative to root, and we fix them
-                // But here we will rely on the fact that the pages are at different depths.
-                // Better approach: Use absolute paths or fix relative paths based on document location.
-                // For this static export, relative paths are tricky.
-                // Let's try to detect depth.
-                const depth = window.location.pathname.split('/').length - 2; // -2 because leading slash and filename
-                let relativePrefix = '';
-                if (!window.location.pathname.endsWith('index.htm') && !window.location.pathname.endsWith('/')) {
-                     // handling file.html
-                }
-
-                // A simpler way for static sites:
-                // check if the current page is index.htm in root
-                // We can use a base tag or just robust relative path logic.
-                // Let's assume the links in menuData are relative to root.
-                // We need to prefix them with appropriate ../
-
-                let link = item.href;
-                // Basic fix for depth
-                const path = window.location.pathname;
-                const segments = path.split('/').filter(p => p.length > 0 && p !== 'index.htm');
-                // if we are at root /, segments is empty or just ['']
-                // but local file system paths might be different.
-
-                // Let's trust the browser to resolve relative if we simply put the correct relative path.
-                // Actually, since we are moving to "decoupled", we can just use the provided links
-                // IF we are at root. If we are in subfolder, we need ../
-
-                let upCount = 0;
-                if (window.location.protocol === 'file:') {
-                     // Crude depth check for local file testing
-                     // Can't reliably detect root without a marker.
-                     // But we can check where 'css/main.css' is pointing in the head.
-                     const cssLink = document.querySelector('link[href*="css/main.css"]');
-                     if (cssLink) {
-                         const href = cssLink.getAttribute('href');
-                         const matches = href.match(/\.\.\//g);
-                         if (matches) upCount = matches.length;
-                     }
-                } else {
-                    // For http server
-                    upCount = segments.length;
-                }
-
-                let finalHref = link;
-                for(let i=0; i<upCount; i++) {
-                    finalHref = '../' + finalHref;
-                }
-
-                a.href = finalHref;
+                a.href = finalHrefPrefix + item.href;
                 a.textContent = item.text;
-                a.className = 'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground';
-
+                a.className = 'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-sm font-medium';
                 li.appendChild(a);
                 ul.appendChild(li);
             });
 
             dropdown.appendChild(ul);
-            btn.parentElement.appendChild(dropdown);
+            liParent.appendChild(dropdown);
 
             // Hover events
             let timeout;
-            btn.parentElement.addEventListener('mouseenter', () => {
+            liParent.addEventListener('mouseenter', () => {
                 clearTimeout(timeout);
                 dropdown.classList.remove('hidden');
+                dropdown.style.display = 'block';
+                dropdown.style.opacity = '1';
+                dropdown.style.visibility = 'visible';
                 btn.setAttribute('aria-expanded', 'true');
+                btn.setAttribute('data-state', 'open');
             });
-            btn.parentElement.addEventListener('mouseleave', () => {
+            liParent.addEventListener('mouseleave', () => {
                 timeout = setTimeout(() => {
                     dropdown.classList.add('hidden');
+                    // dropdown.style.display = 'none';
                     btn.setAttribute('aria-expanded', 'false');
+                    btn.setAttribute('data-state', 'closed');
                 }, 100);
             });
         }
     });
 
     // --- Mobile Menu ---
-    const mobileMenuTrigger = document.querySelector('.lg\\:hidden button[data-slot="sheet-trigger"]');
+    const mobileMenuTrigger = document.querySelector('.lg\\:hidden button');
     if (mobileMenuTrigger) {
         const overlay = document.createElement('div');
         overlay.className = 'fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 hidden';
@@ -138,6 +123,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Content
         const content = document.createElement('div');
+        content.style.overflowY = 'auto';
+        content.style.maxHeight = 'calc(100vh - 60px)';
         content.className = 'flex flex-col gap-4 py-4';
 
         // Determine root prefix for links
@@ -191,8 +178,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Event Listeners
         const toggleMenu = (open) => {
             if (open) {
-                overlay.classList.remove('hidden');
-                sheet.classList.remove('hidden');
+                overlay.style.display = 'block'; overlay.classList.remove('hidden');
+                sheet.style.display = 'block'; sheet.classList.remove('hidden');
                 // minimal delay to allow transition
                 requestAnimationFrame(() => {
                     overlay.setAttribute('data-state', 'open');
