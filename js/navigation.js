@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const dropdown = document.createElement('div');
             // Adding a small padding top so hover doesn't break when moving mouse down from button
             dropdown.className = 'absolute top-full left-0 mt-2 w-56 rounded-md border bg-popover text-popover-foreground shadow-md outline-none hidden z-50';
-            // dropdown.style.display = 'none';
+            dropdown.style.display = 'none';
             dropdown.style.backgroundColor = 'var(--background)';
             dropdown.style.border = '1px solid var(--border)';
 
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             liParent.addEventListener('mouseleave', () => {
                 timeout = setTimeout(() => {
                     dropdown.classList.add('hidden');
-                    // dropdown.style.display = 'none';
+                    dropdown.style.display = 'none';
                     btn.setAttribute('aria-expanded', 'false');
                     btn.setAttribute('data-state', 'closed');
                 }, 100);
