@@ -43,15 +43,18 @@ document.addEventListener('DOMContentLoaded', function() {
             dropdown.style.display = 'none';
             dropdown.style.backgroundColor = 'var(--background)';
             dropdown.style.border = '1px solid var(--border)';
-
+            // Setup transitions for dropdown container
+            dropdown.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
+            dropdown.style.opacity = '0';
+            dropdown.style.transform = 'translateY(-10px)';
 
             // Invisible bridge to connect button and dropdown for smooth hover
             const bridge = document.createElement('div');
             bridge.style.position = 'absolute';
-            bridge.style.top = '-8px';
+            bridge.style.top = '-10px';
             bridge.style.left = '0';
             bridge.style.right = '0';
-            bridge.style.height = '8px';
+            bridge.style.height = '10px';
             bridge.style.backgroundColor = 'transparent';
             dropdown.appendChild(bridge);
 
@@ -89,18 +92,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearTimeout(timeout);
                 dropdown.classList.remove('hidden');
                 dropdown.style.display = 'block';
-                dropdown.style.opacity = '1';
                 dropdown.style.visibility = 'visible';
+
+                // Slight delay to allow display:block to apply before animating opacity/transform
+                requestAnimationFrame(() => {
+                    dropdown.style.opacity = '1';
+                    dropdown.style.transform = 'translateY(0)';
+                });
+
                 btn.setAttribute('aria-expanded', 'true');
                 btn.setAttribute('data-state', 'open');
             });
             liParent.addEventListener('mouseleave', () => {
+                // Animate out
+                dropdown.style.opacity = '0';
+                dropdown.style.transform = 'translateY(-10px)';
+
                 timeout = setTimeout(() => {
                     dropdown.classList.add('hidden');
                     dropdown.style.display = 'none';
+                    dropdown.style.visibility = 'hidden';
                     btn.setAttribute('aria-expanded', 'false');
                     btn.setAttribute('data-state', 'closed');
-                }, 100);
+                }, 200); // Wait for transition to finish
             });
         }
     });
@@ -136,18 +150,23 @@ document.addEventListener('DOMContentLoaded', function() {
              if (matches) rootPrefix = '../'.repeat(matches.length);
         }
 
+        // Array to hold all animated elements for staggered entry
+        const animatedElements = [];
+
         // Build mobile links
         const homeLink = document.createElement('a');
         homeLink.href = rootPrefix + 'index.htm';
         homeLink.textContent = 'Home';
         homeLink.className = 'text-lg font-medium hover:underline';
         content.appendChild(homeLink);
+        animatedElements.push(homeLink);
 
         Object.keys(menuData).forEach(category => {
             const catHeader = document.createElement('div');
             catHeader.className = 'text-lg font-bold mt-2';
             catHeader.textContent = category;
             content.appendChild(catHeader);
+            animatedElements.push(catHeader);
 
             menuData[category].forEach(item => {
                 const link = document.createElement('a');
@@ -155,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 link.textContent = item.text;
                 link.className = 'text-muted-foreground hover:text-foreground block py-1 ml-4';
                 content.appendChild(link);
+                animatedElements.push(link);
             });
         });
 
@@ -163,12 +183,21 @@ document.addEventListener('DOMContentLoaded', function() {
         contactLink.textContent = 'Contact';
         contactLink.className = 'text-lg font-medium hover:underline mt-2';
         content.appendChild(contactLink);
+        animatedElements.push(contactLink);
 
         const aboutLink = document.createElement('a');
         aboutLink.href = rootPrefix + 'about/index.htm';
         aboutLink.textContent = 'About';
         aboutLink.className = 'text-lg font-medium hover:underline';
         content.appendChild(aboutLink);
+        animatedElements.push(aboutLink);
+
+        // Setup initial staggered styles
+        animatedElements.forEach(el => {
+            el.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(20px)'; // start slightly to the right
+        });
 
         sheet.appendChild(closeBtn);
         sheet.appendChild(content);
@@ -180,14 +209,30 @@ document.addEventListener('DOMContentLoaded', function() {
             if (open) {
                 overlay.style.display = 'block'; overlay.classList.remove('hidden');
                 sheet.style.display = 'block'; sheet.classList.remove('hidden');
-                // minimal delay to allow transition
+
+                // minimal delay to allow transition of the sheet itself
                 requestAnimationFrame(() => {
                     overlay.setAttribute('data-state', 'open');
                     sheet.setAttribute('data-state', 'open');
+
+                    // Trigger staggered animation for list items
+                    animatedElements.forEach((el, index) => {
+                        setTimeout(() => {
+                            el.style.opacity = '1';
+                            el.style.transform = 'translateX(0)';
+                        }, 100 + (index * 40)); // 100ms base delay + 40ms per item
+                    });
                 });
             } else {
                 overlay.setAttribute('data-state', 'closed');
                 sheet.setAttribute('data-state', 'closed');
+
+                // Instantly hide list items so they can animate again next time
+                animatedElements.forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateX(20px)';
+                });
+
                 setTimeout(() => {
                     overlay.classList.add('hidden');
                     sheet.classList.add('hidden');
