@@ -9,12 +9,11 @@ def test_animations():
         filepath = f"file://{os.path.abspath('index.htm')}"
         page.goto(filepath)
 
-        solutions_btn = page.locator('nav li > button:has-text("Solutions")')
+        solutions_btn = page.locator('header nav button:has-text("Solutions")')
         solutions_btn.wait_for(state='visible')
-        parent_li = solutions_btn.locator('..')
 
         print("Testing desktop hover...")
-        parent_li.hover()
+        solutions_btn.hover()
         page.wait_for_timeout(300) # wait for open animation
         page.screenshot(path="verification/desktop_hover_anim.png")
 
@@ -22,16 +21,18 @@ def test_animations():
         mobile_page = browser.new_page(viewport={'width': 375, 'height': 667})
         mobile_page.goto(filepath)
 
-        menu_btn = mobile_page.locator('.lg\\:hidden button').first
-        menu_btn.wait_for(state='visible')
+        # We need to find the correct hamburger menu icon
+        menu_btn = mobile_page.locator('svg.lucide-menu').locator('..')
 
         print("Testing mobile menu open...")
         menu_btn.click()
-        mobile_page.wait_for_timeout(300) # wait for halfway open (staggered items)
-        mobile_page.screenshot(path="verification/mobile_menu_halfway.png")
-
-        mobile_page.wait_for_timeout(500) # wait for fully open
+        mobile_page.wait_for_timeout(300) # wait for open
         mobile_page.screenshot(path="verification/mobile_menu_full.png")
+
+        # Test sub-menu
+        mobile_page.locator('#mobile-menu-sheet button:has-text("Industries")').click()
+        mobile_page.wait_for_timeout(300)
+        mobile_page.screenshot(path="verification/mobile_menu_sub.png")
 
         browser.close()
 
