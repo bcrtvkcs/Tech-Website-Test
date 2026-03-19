@@ -194,6 +194,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     overlay.classList.add('hidden');
                     sheet.classList.add('hidden');
+                    overlay.style.display = 'none';
+                    sheet.style.display = 'none';
                 }, 300);
             }
         };
