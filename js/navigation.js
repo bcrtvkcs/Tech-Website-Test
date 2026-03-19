@@ -71,21 +71,53 @@ document.addEventListener('DOMContentLoaded', function() {
             let timeout;
             liParent.addEventListener('mouseenter', () => {
                 clearTimeout(timeout);
+
+                // Force wrapper to display
                 dropdown.classList.remove('hidden');
                 dropdown.style.display = 'block';
+                dropdown.style.opacity = '1';
+                dropdown.style.visibility = 'visible';
                 dropdown.setAttribute('data-state', 'open');
                 dropdown.setAttribute('data-side', 'bottom'); // needed for slide-in-from-top-2
+
+                // Propagate open state to specific Radix UI container wrappers
+                const viewport = dropdown.querySelector('div[data-slot="navigation-menu-viewport"]');
+                if(viewport) {
+                    viewport.setAttribute('data-state', 'open');
+                    viewport.style.display = ''; // clear any inline display
+                    viewport.classList.remove('hidden', 'invisible');
+                }
+                const contentWrapper = dropdown.querySelector('div[data-slot="navigation-menu-content"]');
+                if(contentWrapper) {
+                    contentWrapper.setAttribute('data-state', 'open');
+                    contentWrapper.setAttribute('data-motion', 'from-start'); // For animation to trigger
+                    contentWrapper.style.display = ''; // clear any inline display
+                    contentWrapper.classList.remove('hidden', 'invisible');
+                    contentWrapper.style.pointerEvents = 'auto'; // Re-enable clicking inside menu
+                }
+
                 btn.setAttribute('aria-expanded', 'true');
                 btn.setAttribute('data-state', 'open');
             });
+
             liParent.addEventListener('mouseleave', () => {
                 dropdown.setAttribute('data-state', 'closed');
                 btn.setAttribute('aria-expanded', 'false');
                 btn.setAttribute('data-state', 'closed');
 
+                const viewport = dropdown.querySelector('div[data-slot="navigation-menu-viewport"]');
+                if(viewport) viewport.setAttribute('data-state', 'closed');
+                const contentWrapper = dropdown.querySelector('div[data-slot="navigation-menu-content"]');
+                if(contentWrapper) {
+                    contentWrapper.setAttribute('data-state', 'closed');
+                    contentWrapper.setAttribute('data-motion', 'to-start');
+                }
+
                 timeout = setTimeout(() => {
                     dropdown.classList.add('hidden');
                     dropdown.style.display = 'none';
+
+
                 }, 150); // Match typical Radix UI animate-out duration
             });
         }
