@@ -87,7 +87,7 @@
 @layer theme {
   :host,
   :root {
-    --font-sans: "Geist", sans-serif;
+    --font-sans: "Sansation", sans-serif;
     --color-gray-200: oklch(92.8% 0.006 264.531);
     --color-gray-400: oklch(70.7% 0.022 261.325);
     --color-gray-500: oklch(55.1% 0.027 264.364);
@@ -143,8 +143,8 @@
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --default-transition-duration: 0.15s;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    --default-font-family: "Geist", sans-serif;
-    --default-mono-font-family: "Geist Mono", monospace;
+    --default-font-family: "Sansation", sans-serif;
+    --default-mono-font-family: monospace;
   }
 }
 @layer base {
@@ -2877,7 +2877,7 @@
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.79 0.16 68.6);
+  --primary: #de5500;
   --primary-foreground: oklch(0.141 0.005 285.823);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -2910,7 +2910,7 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.79 0.16 68.6);
+  --primary: #de5500;
   --primary-foreground: oklch(23.075% 0.00003 271.152);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
@@ -2935,69 +2935,15 @@
   --sidebar-border: oklch(1 0 0/10%);
   --sidebar-ring: oklch(0.646 0.222 41.116);
 }
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-Thin.woff2) format("woff2");
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-ExtraLight.woff2) format("woff2");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-Light.woff2) format("woff2");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-Regular.woff2) format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-Medium.woff2) format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-SemiBold.woff2) format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-Bold.woff2) format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-ExtraBold.woff2) format("woff2");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: Geist;
-  src: url(../../../fonts/geist/Geist-Black.woff2) format("woff2");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
+
+
+
+
+
+
+
+
+
 @font-face {
   font-family: Geist Mono;
   src: url(../../../fonts/geist/GeistMono-Regular.woff2) format("woff2");
@@ -3593,4 +3539,45 @@
   to {
     transform: rotate(1turn);
   }
+}
+
+@font-face {
+  font-family: 'Sansation';
+  src: url('../fonts/Sansation_Light_0.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Sansation';
+  src: url('../fonts/Sansation_Light_Italic_0.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Sansation';
+  src: url('../fonts/Sansation_Regular_0.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Sansation';
+  src: url('../fonts/Sansation_Italic_0.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Sansation';
+  src: url('../fonts/Sansation_Bold_0.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Sansation';
+  src: url('../fonts/Sansation_Bold_Italic_0.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+.bg-primary {
+  border-radius: 7px !important;
 }
