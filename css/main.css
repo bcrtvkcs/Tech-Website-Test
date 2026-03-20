@@ -3604,9 +3604,9 @@
 .nav-dropdown-btn::before {
     content: '';
     position: absolute;
-    /* Expanding 8px (0.5rem) on left and right */
-    left: -8px;
-    right: -8px;
+    /* Expanding 12px on left and right */
+    left: -12px;
+    right: -12px;
     top: 0;
     bottom: 0;
     border-radius: calc(var(--radius) - 2px); /* matches rounded-md */
@@ -3618,7 +3618,6 @@
 
 /* Trigger opacity on hover or when open */
 .nav-dropdown-btn[data-state="open"]::before { opacity: 0.5; }
-.nav-dropdown-btn:hover::before,
 .nav-dropdown-btn:hover::before,
 .nav-dropdown-btn:focus-visible::before {
     opacity: 1;
