@@ -3579,5 +3579,13 @@
 }
 
 .bg-primary {
-  border-radius: 7px !important;
+  border-radius: 8px !important;
 }
+
+/* Custom Tailwind arbitrary values from recent updates */
+.h-\[97px\] { height: 97px; }
+.h-\[43px\] { height: 43px; }
+.text-\[17px\] { font-size: 17px; }
+.px-\[29px\] { padding-left: 29px; padding-right: 29px; }
+.pt-\[97px\] { padding-top: 97px; }
+.size-\[43px\] { width: 43px; height: 43px; }
