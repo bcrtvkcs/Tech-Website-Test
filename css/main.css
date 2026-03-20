@@ -3593,3 +3593,41 @@
   height: 58px !important;
 }
 .px-\[45px\] { padding-left: 45px; padding-right: 45px; }
+
+/* Widen hover effect for dropdown buttons without changing layout */
+.nav-dropdown-btn {
+    position: relative;
+    /* We keep the original px-5 padding for layout */
+}
+
+/* Create the wider background pseudo-element */
+.nav-dropdown-btn::before {
+    content: '';
+    position: absolute;
+    /* Expanding 8px (0.5rem) on left and right */
+    left: -8px;
+    right: -8px;
+    top: 0;
+    bottom: 0;
+    border-radius: calc(var(--radius) - 2px); /* matches rounded-md */
+    background-color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: -1;
+}
+
+/* Trigger opacity on hover or when open */
+.nav-dropdown-btn[data-state="open"]::before { opacity: 0.5; }
+.nav-dropdown-btn:hover::before,
+.nav-dropdown-btn:hover::before,
+.nav-dropdown-btn:focus-visible::before {
+    opacity: 1;
+}
+
+/* Remove default hover/focus backgrounds to prevent conflicts */
+.nav-dropdown-btn.bg-background,
+.nav-dropdown-btn.hover\:bg-accent,
+.nav-dropdown-btn.focus\:bg-accent,
+.nav-dropdown-btn.data-\[state\=open\]\:bg-accent\/50 {
+    background-color: transparent !important;
+}
