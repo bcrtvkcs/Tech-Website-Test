@@ -3589,3 +3589,6 @@
 .px-\[29px\] { padding-left: 29px; padding-right: 29px; }
 .pt-\[97px\] { padding-top: 97px; }
 .size-\[43px\] { width: 43px; height: 43px; }
+.h-12 {
+  height: 58px !important;
+}
