@@ -87,7 +87,8 @@
 @layer theme {
   :host,
   :root {
-    --font-sans: "Sansation", sans-serif;
+    --font-sans: "TikTokSans", sans-serif;
+    --font-sansation: "Sansation", sans-serif;
     --color-gray-200: oklch(92.8% 0.006 264.531);
     --color-gray-400: oklch(70.7% 0.022 261.325);
     --color-gray-500: oklch(55.1% 0.027 264.364);
@@ -143,7 +144,7 @@
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --default-transition-duration: 0.15s;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    --default-font-family: "Sansation", sans-serif;
+    --default-font-family: "TikTokSans", sans-serif;
     --default-mono-font-family: monospace;
   }
 }
@@ -197,6 +198,7 @@
   h4,
   h5,
   h6 {
+    font-family: var(--font-sansation);
     font-size: inherit;
     font-weight: inherit;
   }
@@ -1587,18 +1589,22 @@
     text-align: left;
   }
   .text-2xl {
+    font-family: var(--font-sansation);
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
   }
   .text-3xl {
+    font-family: var(--font-sansation);
     font-size: var(--text-3xl);
     line-height: var(--tw-leading, var(--text-3xl--line-height));
   }
   .text-4xl {
+    font-family: var(--font-sansation);
     font-size: var(--text-4xl);
     line-height: var(--tw-leading, var(--text-4xl--line-height));
   }
   .text-5xl {
+    font-family: var(--font-sansation);
     font-size: var(--text-5xl);
     line-height: var(--tw-leading, var(--text-5xl--line-height));
   }
@@ -2643,18 +2649,22 @@
       text-align: left;
     }
     .md\:text-4xl {
+      font-family: var(--font-sansation);
       font-size: var(--text-4xl);
       line-height: var(--tw-leading, var(--text-4xl--line-height));
     }
     .md\:text-5xl {
+      font-family: var(--font-sansation);
       font-size: var(--text-5xl);
       line-height: var(--tw-leading, var(--text-5xl--line-height));
     }
     .md\:text-6xl {
+      font-family: var(--font-sansation);
       font-size: var(--text-6xl);
       line-height: var(--tw-leading, var(--text-6xl--line-height));
     }
     .md\:text-7xl {
+      font-family: var(--font-sansation);
       font-size: var(--text-7xl);
       line-height: var(--tw-leading, var(--text-7xl--line-height));
     }
@@ -2686,6 +2696,7 @@
       padding-inline: calc(var(--spacing) * 12);
     }
     .lg\:text-7xl {
+      font-family: var(--font-sansation);
       font-size: var(--text-7xl);
       line-height: var(--tw-leading, var(--text-7xl--line-height));
     }
@@ -3539,6 +3550,13 @@
   to {
     transform: rotate(1turn);
   }
+}
+
+@font-face {
+  font-family: 'TikTokSans';
+  src: url('../fonts/TikTokSans-VariableFont_opsz,slnt,wdth,wght_0.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
 }
 
 @font-face {
